@@ -1,0 +1,13 @@
+{
+    "manifest_version": 2,
+    "name": "NYTimes Crossword Data Extractor",
+    "version": "1.0",
+    "description": "Saves daily NYTimes crossword data to JSON.",
+    "permissions": ["downloads"],
+    "content_scripts": [
+        {
+            "matches": ["https://www.nytimes.com/puzzles/leaderboards"],
+            "js": ["extract.js"]
+        }
+    ]
+}
