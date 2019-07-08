@@ -7,13 +7,20 @@
 // Identify the bar div to add the new button
 buttonBar = document.getElementsByClassName("lbd-board__actions")[0]
 
+// Get a date string
+d = new Date()
+dateString = [d.getFullYear(), d.getMonth() + 1, d.getDate()].join('-') 
+
 // Create the blob URL for the JSON
-json = Array.from(document.getElementsByClassName("lbd-score")).map(item =>
-    ({
-        name: item.childNodes[1].childNodes[0].data,
-        time: item.childNodes[2].childNodes[0].data
+json = ({
+        data: Array.from(document.getElementsByClassName("lbd-score")).map(item =>
+            ({
+                name: item.childNodes[1].childNodes[0].data,
+                time: item.childNodes[2].childNodes[0].data
+            })),
+        date: dateString
     })
-)
+
 jsonBlob = new Blob([JSON.stringify(json)], {type: "application/json"})
 jsonURL = URL.createObjectURL(jsonBlob)
 
@@ -21,8 +28,7 @@ jsonURL = URL.createObjectURL(jsonBlob)
 newNode = document.createElement("a")
 newNode.className = "lbd-button white"
 newNode.href = jsonURL
-d = new Date()
-newNode.download = "crossword_" + [d.getFullYear(), d.getMonth() + 1, d.getDay()].join('-') + ".json"
+newNode.download = "crossword_" + dateString + ".json"
 newNode.appendChild(document.createTextNode("Extract Data"))
 
 // Append the new button
