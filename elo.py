@@ -33,9 +33,10 @@ def update_ratings(new_json, players=pd.DataFrame(columns=['name', 'rating'])):
     # Fit to gamma distribution
     data = new_json['data']
     avg = data['time'].mean()
-    std = data['time'].std()
-    k = (avg/std)**2
-    theta = std**2/avg
+    avglog = data['time'].apply(np.log).mean()
+    s = np.log(avg) - avglog
+    k = (3 - s + np.sqrt((s - 3) ** 2 + 24 * s)) / (12 * s)
+    theta = avg / k
 
     for _, result in data.iterrows():
         if not (players['name'] == result['name']).any():
@@ -56,14 +57,15 @@ def update_ratings(new_json, players=pd.DataFrame(columns=['name', 'rating'])):
 
 
 def plot_results(new_json):
-    times = [item['time'] for item in new_json['data']]
-    avg = np.average(times)
-    std = np.std(times)
-    k = (avg/std)**2
-    theta = std**2/avg
+    data = new_json['data']
+    avg = data['time'].mean()
+    avglog = data['time'].apply(np.log).mean()
+    s = np.log(avg) - avglog
+    k = (3 - s + np.sqrt((s - 3) ** 2 + 24 * s)) / (12 * s)
+    theta = avg / k
     x = np.linspace(0, 300)
     plt.plot(x, gamma_dist(x, k, theta), c='blue')
-    plt.scatter(times, np.zeros(len(times)), c='red')
+    plt.scatter(data['time'], np.zeros(data['time'].count()), c='red')
     plt.show()
 
 
@@ -72,4 +74,5 @@ for filename in sys.argv[1:]:
     with open(filename) as file:
         new_json = load_json(file)
         players = update_ratings(new_json, players)
+        plot_results(new_json)
         print(players.sort_values(by=['rating']))
