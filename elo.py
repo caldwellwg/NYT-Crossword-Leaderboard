@@ -45,7 +45,8 @@ def update_ratings(new_json, players=pd.DataFrame(columns=['name', 'rating'])):
                 'rating': 1200
             }, ignore_index=True)
 
-    average_rating = players[players['name'].isin(data['name'])]['rating'].mean()
+    average_rating = players[players['name'].isin(
+        data['name'])]['rating'].mean()
     for _, result in data.iterrows():
         rating = players[players['name'] == result['name']]['rating']
         rating_diff = (rating - average_rating) / n
