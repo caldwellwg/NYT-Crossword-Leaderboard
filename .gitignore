@@ -1,3 +1,14 @@
+extract.js
+
+# Python venv stuff
+bin/
+include/
+lib/
+lib64
+__pycache__
+pyvenv.cfg
+share/
+
 # Logs
 logs
 *.log

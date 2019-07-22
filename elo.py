@@ -22,11 +22,11 @@ def load_json(handle):
 
 
 def gamma_dist(x, k, theta):
-    return x**(k-1)*np.exp(-x/theta)/(gamma(k)*theta**k)
+    return x**(k - 1) * np.exp(-x / theta) / (gamma(k) * theta**k)
 
 
 def score_gamma(x, k, theta):
-    return gammaincc(k, x/theta)
+    return gammaincc(k, x / theta)
 
 
 def update_ratings(new_json, players=pd.DataFrame(columns=['name', 'rating'])):
@@ -35,7 +35,7 @@ def update_ratings(new_json, players=pd.DataFrame(columns=['name', 'rating'])):
     avg = data['time'].mean()
     avglog = data['time'].apply(np.log).mean()
     s = np.log(avg) - avglog
-    k = (3 - s + np.sqrt((s - 3) ** 2 + 24 * s)) / (12 * s)
+    k = (3 - s + np.sqrt((s - 3)**2 + 24 * s)) / (12 * s)
     theta = avg / k
 
     for _, result in data.iterrows():
@@ -70,10 +70,20 @@ def plot_results(new_json):
     plt.show()
 
 
+ratings = {}
 players = pd.DataFrame(columns=['name', 'rating'])
 for filename in sys.argv[1:]:
     with open(filename) as file:
         new_json = load_json(file)
         players = update_ratings(new_json, players)
-        plot_results(new_json)
-        print(players.sort_values(by=['rating']))
+        print(players.sort_values('rating'))
+        for _, player in players.iterrows():
+            if player['name'] in ratings.keys():
+                ratings.update(
+                    {player['name']: ratings[player['name']] + [player['rating']]})
+            else:
+                ratings.update({player['name']: [player['rating']]})
+for name, rs in ratings.items():
+    plt.plot(range(len(rs)), rs, label=name)
+plt.legend(loc='upper left', fontsize='x-small')
+plt.show()
