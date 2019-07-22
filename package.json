@@ -1,0 +1,27 @@
+{
+  "name": "NYT-Crossword-Leaderboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "extract.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caldwellwg/NYT-Crossword-Leaderboard.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/caldwellwg/NYT-Crossword-Leaderboard/issues"
+  },
+  "homepage": "https://github.com/caldwellwg/NYT-Crossword-Leaderboard#readme",
+  "devDependencies": {
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6"
+  },
+  "dependencies": {
+    "cron-scheduler": "^1.2.0"
+  }
+}
