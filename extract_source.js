@@ -38,7 +38,7 @@ buttonBar.appendChild(newNode)
 var cron = require('cron-scheduler')
 
 // schedule to fetch score, 10pm on weekdays and 6pm weekends 
-sched = ['55 5 * * 0', '55 9 * * 1', '55 9 * * 2', '55 9 * * 3', '55 9 * * 4', '55 9 * * 5', '55 5 * * 6']
+sched = ['55 4 * * 0', '55 8 * * 1', '55 8 * * 2', '55 8 * * 3', '55 8 * * 4', '55 8 * * 5', '55 4 * * 6']
 
 for (i = 0; i < sched.length; i++) {
     cron({ on: sched[i] }, function () {
