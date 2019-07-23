@@ -9,7 +9,9 @@ buttonBar = document.getElementsByClassName("lbd-board__actions")[0]
 
 // Get a date string
 d = new Date()
-dateString = [d.getFullYear(), d.getMonth() + 1, d.getDate()].join('-') 
+dateString = [d.getFullYear(),
+              ("0" + (d.getMonth() + 1)).slice(-2),
+              ("0" + d.getDate()).slice(-2)].join('-') 
 
 // Create the blob URL for the JSON
 json = ({
@@ -38,7 +40,7 @@ buttonBar.appendChild(newNode)
 var cron = require('cron-scheduler')
 
 // schedule to fetch score, 10pm on weekdays and 6pm weekends 
-sched = ['55 4 * * 0', '55 8 * * 1', '55 8 * * 2', '55 8 * * 3', '55 8 * * 4', '55 8 * * 5', '55 4 * * 6']
+sched = ['55 16 * * 0', '55 20 * * 1', '55 20 * * 2', '55 20 * * 3', '55 20 * * 4', '55 20 * * 5', '55 16 * * 6']
 
 for (i = 0; i < sched.length; i++) {
     cron({ on: sched[i] }, function () {
