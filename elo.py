@@ -55,25 +55,21 @@ def process_times():
         k = (3 - s + np.sqrt((s - 3)**2 + 24 * s)) / (12 * s)
         theta = avg / k
 
-        player_data = []
+        c.execute('''SELECT name, rating
+                     FROM ratings
+                     WHERE name IN ({0})
+                     GROUP BY name
+                     ORDER BY date DESC'''.format(', '.join('?' for _ in players)), players)
+        player_data = dict(c.fetchall())
         for player in players:
-            c.execute('''SELECT name, rating
-                         FROM ratings
-                         WHERE name=?
-                         ORDER BY date DESC
-                         LIMIT 1''', (player,))
-            res = c.fetchone()
-            if res is None:
-                name = player
-                rating = 1200
-            else:
-                name, rating = res
-            player_data.append((name, rating))
-        average_rating = np.mean([rating for _, rating in player_data])
-        for name, rating in player_data:
+            if player not in player_data.keys():
+                player_data.update({player: 1200})
+
+        average_rating = np.mean(list(player_data.values()))
+        for name, rating in player_data.items():
             time = [t for nn, t in data if nn == name][0]
             rating_diff = (rating - average_rating) / n
-            expected_score = 1 / (1 + 0.1**rating_diff)
+            expected_score = 1 / (1 + 10 ** rating_diff)
             actual_score = score_gamma(time, k, theta)
             new_rating = rating + K * (actual_score - expected_score)
             c.execute('INSERT INTO ratings VALUES (?, ?, ?)',
@@ -121,7 +117,6 @@ dates = [date.astype(dt.datetime) for date in np.linspace(
 c.execute('SELECT DISTINCT name FROM ratings')
 for player in c.fetchall():
     c.execute('SELECT date, rating FROM ratings WHERE name=?', player)
-    data = []
     z = dict([(dt.datetime.strptime(date, '%Y-%m-%d').date(), rating)
               for date, rating in c.fetchall()])
     plt.plot(dates, forward_fill([z.get(date)
