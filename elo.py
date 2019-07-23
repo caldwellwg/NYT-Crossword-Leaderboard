@@ -47,8 +47,9 @@ def process_times():
     c.execute('SELECT DISTINCT date FROM times')
     for date in c.fetchall():
         c.execute('SELECT name, time FROM times WHERE date=?', date)
-        data = c.fetchall()
-        players, times = map(list, zip(*data))
+        today_data = dict(c.fetchall())
+        players = list(today_data.keys())
+        times = list(today_data.values())
         avg = np.mean(times)
         avglog = np.mean(np.log(times))
         s = np.log(avg) - avglog
@@ -67,7 +68,7 @@ def process_times():
 
         average_rating = np.mean(list(player_data.values()))
         for name, rating in player_data.items():
-            time = [t for nn, t in data if nn == name][0]
+            time = today_data[name]
             rating_diff = (rating - average_rating) / n
             expected_score = 1 / (1 + 10 ** rating_diff)
             actual_score = score_gamma(time, k, theta)
