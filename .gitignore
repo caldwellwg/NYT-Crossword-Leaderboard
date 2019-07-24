@@ -1,4 +1,5 @@
 extract.js
+whiteblacklist.json
 
 # Python venv stuff
 bin/
