@@ -1,6 +1,6 @@
 import json
 import datetime as dt
-from scipy.special import gammaincc
+from scipy.special import gammaincc, gamma
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -44,7 +44,7 @@ def forward_fill(arr):
 
 
 def process_times(cur):
-    cur.execute('SELECT DISTINCT date FROM times')
+    cur.execute('SELECT DISTINCT date FROM times ORDER BY date ASC')
     for date in cur.fetchall():
         cur.execute('SELECT name, time FROM times WHERE date=?', date)
         today_data = dict(cur.fetchall())
@@ -61,7 +61,9 @@ def process_times(cur):
                        WHERE name IN ({0})
                        AND name NOT IN ({1})
                        GROUP BY name
-                       ORDER BY date DESC'''.format(', '.join('?' for _ in players), ', '.join('?' for _ in blacklist)), players + blacklist)
+                       ORDER BY date DESC'''.format(', '.join('?' for _ in players),
+                                                    ', '.join('?' for _ in blacklist)),
+                    players + blacklist)
         player_data = dict(cur.fetchall())
         for player in players:
             if player not in player_data.keys():
@@ -70,12 +72,13 @@ def process_times(cur):
         average_rating = np.mean(list(player_data.values()))
         for name, rating in player_data.items():
             time = today_data[name]
-            rating_diff = (rating - average_rating) / n
+            rating_diff = (average_rating - rating) / n
             expected_score = 1 / (1 + 10 ** rating_diff)
             actual_score = score_gamma(time, k, theta)
             new_rating = rating + K * (actual_score - expected_score)
             cur.execute('INSERT INTO ratings VALUES (?, ?, ?)',
                         date + (name, new_rating))
+            print(date[0], " - ", name, ": ", new_rating)
 
 
 # Setup sqlite
